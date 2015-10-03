@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Movies DB</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="Refresh">Refresh Movies</string>
+    <string name="title_activity_movie_detalle">MovieDetalle</string>
+ </resources>
