@@ -76,7 +76,7 @@ public class FilmsProvider {
 
     //  Reiews's Table
 
-    @TableEndpoint(table = FilmDataBase.TRILERS) public static class Reviews {
+    @TableEndpoint(table = FilmDataBase.REVIEWS) public static class Reviews {
         @ContentUri(
                 path = Path.REVIEWS,
                 type = "vnd.android.cursor.dir/reviews",
@@ -87,7 +87,7 @@ public class FilmsProvider {
                 name = "TRAILER_ID",
                 path = Path.REVIEWS + "/#",
                 type = "vnd.android.cursor.item/reviews",
-                whereColumn = ReviewColumns.ID_REVIEW_DB,
+                whereColumn = ReviewColumns.REF_ID_MOVIE,
                 pathSegment = 1)
         public static Uri withId(long id) {return buildUri(Path.REVIEWS, String.valueOf(id));
         }

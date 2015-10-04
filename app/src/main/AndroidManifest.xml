@@ -9,6 +9,7 @@
         android:theme="@style/AppTheme" >
         <service android:name=".Services.FilmServices" />
         <service android:name=".Services.TrailerServices" />
+        <service android:name=".Services.ReviewServices" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >

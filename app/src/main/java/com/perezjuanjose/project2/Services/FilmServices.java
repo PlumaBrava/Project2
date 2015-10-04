@@ -64,17 +64,56 @@ public class FilmServices extends IntentService {
     public IBinder onBind(Intent intent) {
         return null;
     }
+    @Override
+    public void onDestroy(){
+//        Intent intent1 = new Intent(this, TrailerServices.class);
+//        intent1.putExtra(TrailerServices.TRILER_QUERY_EXTRA, "SomeDAta");
+//        this.startService(intent1);
+//        Log.i(LOG_TAG, "Se llamo TrailerService");
+//
+//        Intent intent2 = new Intent(this, ReviewServices.class);
+//        intent2.putExtra(ReviewServices.REVIER_QUERY_EXTRA, "SomeDAta");
+//        this.startService(intent2);
+//        Log.i(LOG_TAG, "Se llamo REVIEWService");
+
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         String filmQuery = intent.getStringExtra(FILM_QUERY_EXTRA);
         insertData();
 
-        Intent intent1 = new Intent(this, TrailerServices.class);
-        intent1.putExtra(TrailerServices.TRILER_QUERY_EXTRA, "SomeDAta");
+
+
+          }
+
+
+    public void insertTrailersAndRevies(){
+
+        Cursor c = this.getContentResolver().query(FilmsProvider.Films.CONTENT_URI,
+                null, null, null, null);
+
+
+        if (c.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+
+                Intent intent1 = new Intent(this, TrailerServices.class);
+        intent1.putExtra(TrailerServices.TRILER_QUERY_EXTRA, c.getColumnIndex(FilmsColumns.ID_MOVI_DB));
         this.startService(intent1);
         Log.i(LOG_TAG, "Se llamo TrailerService");
+
+        Intent intent2 = new Intent(this, ReviewServices.class);
+        intent2.putExtra(ReviewServices.REVIER_QUERY_EXTRA, c.getColumnIndex(FilmsColumns.ID_MOVI_DB));
+        this.startService(intent2);
+        Log.i(LOG_TAG, "Se llamo REVIEWService");
+
+            } while (c.moveToNext());
+        }
     }
+
+
+
 
     public void insertData() {
         Log.d(LOG_TAG, "insert");
@@ -180,7 +219,7 @@ public class FilmServices extends IntentService {
 
                     Log.d(LOG_TAG, "Lectura del cursor de films " + c.getCount());
                     Log.d(LOG_TAG, "Lectura del cursor Fillms" + dumpCursorToString(c));
-
+                  //  insertTrailersAndRevies();
 
 
                 } catch(RemoteException | OperationApplicationException e){

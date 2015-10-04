@@ -25,6 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.perezjuanjose.project2.Services.ReviewServices;
+import com.perezjuanjose.project2.Services.TrailerServices;
 import com.perezjuanjose.project2.data.FilmsColumns;
 import com.perezjuanjose.project2.data.FilmsProvider;
 import com.perezjuanjose.project2.data.ReviewCursorAdapter;
@@ -58,7 +60,9 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
     private TrailerCursorAdapter mTrailerAdapter; //pueden ser valiables locales?
     private ReviewCursorAdapter mReviewAdapter;//pueden ser valiables locales?
     private Cursor mTrailerCursor;
+    private Cursor mReviewCursor;
     private ListView listView;
+    private ListView listViewReview;
 
     public MovieDetalleFragment() {
         setHasOptionsMenu(true);
@@ -114,30 +118,12 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
 
 
         rootView = inflater.inflate(R.layout.fragment_movi_detalle, container, false);
-//        Intent intent = getActivity().getIntent();
-//        if(intent != null && intent.hasExtra(Intent.EXTRA_TEXT) ){
-//            String sStr = intent.getStringExtra(Intent.EXTRA_TEXT);
-//
-//
-//            Boolean adults= intent.getBooleanExtra("ADULTS", false) ;
-//            String backdrop_path=intent.getStringExtra("BACKDROP_PATH");
-//            String origianlLanguaje=intent.getStringExtra("ORIGINLANGUAJE");
-//            String originalTitle=intent.getStringExtra("ORIGINALTITLE");
-//            String overview=intent.getStringExtra("OVERVIEW");
-//            String releaseDate=intent.getStringExtra("RELEASEDATE");
-//            String posterPath=intent.getStringExtra("POSTERPATH");
-//            Double popularity=intent.getDoubleExtra("POPULARITY", 0);
-//            String title=intent.getStringExtra("TITLE");
-//            Boolean video= intent.getBooleanExtra("VIDEO", false) ;
-//            Double voteAverage=intent.getDoubleExtra("VOTEAVERAGE", 0);
-//            int vote_count=intent.getIntExtra("VOTECOUNT",0);
+
 
 
 
          movieImagen =(ImageView) rootView.findViewById(R.id.detail_image);
-//            Picasso.with(rootView.getContext())
-//                    .load("http://image.tmdb.org/t/p/w185"+posterPath)
-//                    .into(movieImagen);
+
 
          mTitleView=(TextView) rootView.findViewById(R.id.detail_title);
 
@@ -162,29 +148,23 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
             }
         });
 
-//        Cursor cReview = getActivity().getContentResolver().query(FilmsProvider.Reviews.CONTENT_URI,
-//                null, null, null, null);
-//
-//        if ((cReview == null || cReview.getCount() == 0))
-//        {
-//            // no hay comentarios
-//        }
-//        else {
-//            mReviewAdapter = new ReviewCursorAdapter(getActivity(), cReview, 0);
-//
-//
-//            // Get a reference to the ListView, and attach this adapter to it.
-//            ListView listViewReview = (ListView) rootView.findViewById(R.id.reviewList);
-//            listViewReview.setAdapter(mReviewAdapter);
-//        }
 
-
-//        mTrailerCursor = getActivity().getContentResolver().query(FilmsProvider.Trailes.withId(m_Id_Movi_Db),
-//                null, null, null, null);
+// Reviews
+        mReviewCursor = getActivity().getContentResolver().query(FilmsProvider.Reviews.CONTENT_URI,
+                null, null, null, null);
 
 
 
 
+            // Get a reference to the ListView, and attach this adapter to it.
+            listViewReview = (ListView) rootView.findViewById(R.id.reviewList);
+
+
+
+// Trailers
+
+        mTrailerCursor = getActivity().getContentResolver().query(FilmsProvider.Trailes.withId(m_Id_Movi_Db),
+                null, null, null, null);
             // Get a reference to the ListView, and attach this adapter to it.
            listView = (ListView) rootView.findViewById(R.id.trailerList);
            // listView.setAdapter(mTrailerAdapter);
@@ -258,19 +238,46 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
             m_Ref_Id_Movi=data.getInt(data.getColumnIndex(FilmsColumns._ID));
 
             m_Id_Movi_Db=data.getInt(data.getColumnIndex(FilmsColumns.ID_MOVI_DB));
+
+
+     //Trailers
            mTrailerCursor = getActivity().getContentResolver().query(FilmsProvider.Trailes.withId(m_Id_Movi_Db),
                    null, null, null, null);
-            mTrailerAdapter = new TrailerCursorAdapter(getActivity(), mTrailerCursor, 0);
-            listView.setAdapter(mTrailerAdapter);
+            if (mTrailerCursor != null && mTrailerCursor.moveToFirst()) {
 
-            Log.i(LOG_TAG, "FilmsColumns.ID_MOVI_DB:"+FilmsColumns.ID_MOVI_DB);
-            Log.i(LOG_TAG, "Lectura del  m_Id_Movi_Db" + data.getInt(data.getColumnIndex(FilmsColumns.ID_MOVI_DB)));
+                mTrailerAdapter = new TrailerCursorAdapter(getActivity(), mTrailerCursor, 0);
+                listView.setAdapter(mTrailerAdapter);
+
+                Log.i(LOG_TAG, "FilmsColumns.ID_MOVI_DB:" + FilmsColumns.ID_MOVI_DB);
+                Log.i(LOG_TAG, "Lectura del  m_Id_Movi_Db" + data.getInt(data.getColumnIndex(FilmsColumns.ID_MOVI_DB)));
+            }else {
+                Intent intent1 = new Intent( getActivity(), TrailerServices.class);
+                intent1.putExtra(TrailerServices.TRILER_QUERY_EXTRA, m_Id_Movi_Db);
+                getActivity().startService(intent1);
+                Log.i(LOG_TAG, "Se llamo TrailerService");
+
+            }
+
+      //Reviews
+
+
+            mReviewCursor = getActivity().getContentResolver().query(FilmsProvider.Reviews.withId(m_Id_Movi_Db),
+                    null, null, null, null);
+            if (mReviewCursor != null && mReviewCursor.moveToFirst()) {
+                mReviewAdapter = new ReviewCursorAdapter(getActivity(), mReviewCursor, 0);
+                listViewReview.setAdapter(mReviewAdapter);
+            }else {
+                Intent intent2 = new Intent(getActivity(), ReviewServices.class);
+                intent2.putExtra(ReviewServices.REVIER_QUERY_EXTRA,m_Id_Movi_Db);
+                getActivity().startService(intent2);
+                Log.i(LOG_TAG, "Se llamo REVIEWService");
+            }
+
 
             mTitleView.setText(data.getString(data.getColumnIndex(FilmsColumns.TITLE)));
-            Log.d(LOG_TAG, "Lectura del  Titulo" + data.getString(data.getColumnIndex(FilmsColumns.TITLE)));
 
-            mReleaseDateView.setText(data.getString(data.getColumnIndex(FilmsColumns.RELEASSE_DATE)));
-            Log.d(LOG_TAG, "Lectura del  Titulo" + data.getString(data.getColumnIndex(FilmsColumns.RELEASSE_DATE)));
+
+                mReleaseDateView.setText(data.getString(data.getColumnIndex(FilmsColumns.RELEASSE_DATE)));
 
             mVoteAverageView.setText(Float.toString(data.getFloat(data.getColumnIndex(FilmsColumns.VOTE_AVERAGE))));
             mOverviewView.setText(data.getString(data.getColumnIndex(FilmsColumns.OVERVIEW)));
@@ -281,12 +288,7 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
                    .load("http://image.tmdb.org/t/p/w185" + data.getString(data.getColumnIndex(FilmsColumns.POSTER_PATH)))
                     .into(movieImagen);
 
-//        versionNumberView.setText(cursor.getString(cursor.getColumnIndex(FilmsColumns.POPULARITY)));
-//
-//        RatingBar ratingBar= (RatingBar) view.findViewById(R.id.rating);
-//        ratingBar.setRating((float) cursor.getFloat(cursor.getColumnIndex(FilmsColumns.VOTE_AVERAGE)) /100 * 5);
 
-            // Use weather art image
 
         }
     }
