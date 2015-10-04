@@ -2,6 +2,7 @@ package com.perezjuanjose.project2;
 
 
 import android.content.ContentProviderOperation;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import com.perezjuanjose.project2.Services.FilmServices;
 import com.perezjuanjose.project2.data.FilmCursosAdapter;
 import com.perezjuanjose.project2.data.FilmsColumns;
 import com.perezjuanjose.project2.data.FilmsProvider;
@@ -83,7 +85,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
     }
-
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        // Add this line in order for this fragment to handle menu events.
+//        setHasOptionsMenu(true);
+//    }
     @Override
     public void onStart(){
 
@@ -139,7 +146,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        setHasOptionsMenu(true);
+
 
 
 
@@ -148,7 +155,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         if (c == null || c.getCount() == 0){
             Log.i(LOG_TAG, "Se llama a insertData desde create view");
-           insertData();
+           updateData();
         }
         Log.i(LOG_TAG, "cursor count: %d" + c.getCount());
 
@@ -204,6 +211,16 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         mFilmAdapter.swapCursor(null);
     }
 
+public boolean existeFilmenInDB(int idFilm){
+    Cursor c = getActivity().getContentResolver().query(FilmsProvider.Films.withId(idFilm),
+            null, null, null, null);
+    if (c.getCount()>0) return true;
+    else return false;
+}
+
+
+
+
     public void insertData() {
         Log.d(LOG_TAG, "insert");
 
@@ -211,12 +228,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         //  Cursor c = getActivity().getContentResolver().query(FilmsProvider.Films.CONTENT_URI, null, null, null, null);
 
-       // if (c != null || c.getCount()<> 0){
-            Log.i(LOG_TAG, "Se llama a delete");
-            getActivity().getContentResolver().delete(FilmsProvider.Films.CONTENT_URI,
-                    null, null);
+        // if (c != null || c.getCount()<> 0){
+        Log.i(LOG_TAG, "Se llama a delete");
+        getActivity().getContentResolver().delete(FilmsProvider.Films.CONTENT_URI,
+                null, null);
 
-       // }
+        // }
 
         ///// Filmas
 
@@ -295,8 +312,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
 
                     }
-                   // insertReview(elemento1.getId());
-                   // insertTrailer(elemento1.getId());
+                    // insertReview(elemento1.getId());
+                    // insertTrailer(elemento1.getId());
                 }
                 try{
                     getActivity().getContentResolver().applyBatch(FilmsProvider.AUTHORITY, batchOperations1);
@@ -319,16 +336,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         });
 
     }
-
-
-
-
-public boolean existeFilmenInDB(int idFilm){
-    Cursor c = getActivity().getContentResolver().query(FilmsProvider.Films.withId(idFilm),
-            null, null, null, null);
-    if (c.getCount()>0) return true;
-    else return false;
-}
 
 public void insertTrailer(int moviId) {
 
@@ -482,11 +489,13 @@ public void insertTrailer(int moviId) {
 
         Log.i("Prererencias", "order_by:" + order_by );
 
-
+        Intent intent = new Intent(getActivity(), FilmServices.class);
+        intent.putExtra(FilmServices.FILM_QUERY_EXTRA,"SomeDAta");
+        getActivity().startService(intent);
         // DELETE FILMS WHITH FAVORITE = FALSE
 
      // CALL WEB
-        insertData();
+        //insertData();
         //Fetche the movis data
         //FetchMoviesTask moviesTask = new FetchMoviesTask();
 

@@ -11,12 +11,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.perezjuanjose.project2.R;
-import com.squareup.picasso.Picasso;
 
 
 /**
  * Created by JJ_PEREZ on 22/09/2015.
  */
+
+
+
 public class TrailerCursorAdapter extends CursorAdapter{
 
     public TrailerCursorAdapter(Context context, Cursor c, int flags) {

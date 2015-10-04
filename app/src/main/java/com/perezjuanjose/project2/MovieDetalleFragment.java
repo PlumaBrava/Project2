@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -52,10 +53,12 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
     private TextView mOverviewView;
     private CheckBox mfavorite;
     private int m_Ref_Id_Movi;
+    private int m_Id_Movi_Db;
     private View rootView;
     private TrailerCursorAdapter mTrailerAdapter; //pueden ser valiables locales?
     private ReviewCursorAdapter mReviewAdapter;//pueden ser valiables locales?
-
+    private Cursor mTrailerCursor;
+    private ListView listView;
 
     public MovieDetalleFragment() {
         setHasOptionsMenu(true);
@@ -175,34 +178,36 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
 //            listViewReview.setAdapter(mReviewAdapter);
 //        }
 
-        Cursor c = getActivity().getContentResolver().query(FilmsProvider.Trailes.CONTENT_URI,
-                null, null, null, null);
-        mTrailerAdapter = new TrailerCursorAdapter(getActivity(), c, 0);
+
+//        mTrailerCursor = getActivity().getContentResolver().query(FilmsProvider.Trailes.withId(m_Id_Movi_Db),
+//                null, null, null, null);
 
 
-        // Get a reference to the ListView, and attach this adapter to it.
-        ListView listView = (ListView) rootView.findViewById(R.id.trailerList);
-        listView.setAdapter(mTrailerAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // CursorAdapter returns a cursor at the correct position for getItem(), or null
-                // if it cannot seek to that position.
-                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-                if (cursor != null) {
-                    //       String locationSetting = Utility.getPreferredLocation(getActivity());
+            // Get a reference to the ListView, and attach this adapter to it.
+           listView = (ListView) rootView.findViewById(R.id.trailerList);
+           // listView.setAdapter(mTrailerAdapter);
 
-                   String key=cursor.getString(cursor.getColumnIndex(TrailerColumns.KEY));
-                  Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + key));
-                    //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:7voEoWRKbAE" ));
-                    startActivity(intent);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                    // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                    // if it cannot seek to that position.
+                    Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                    if (cursor != null) {
+                        //       String locationSetting = Utility.getPreferredLocation(getActivity());
+
+                        String key = cursor.getString(cursor.getColumnIndex(TrailerColumns.KEY));
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + key));
+                        //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:7voEoWRKbAE" ));
+                        startActivity(intent);
+
+                    }
 
                 }
-
-            }
-        });
+            });
 
 
 
@@ -247,11 +252,19 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(LOG_TAG, "curosorCargado");
-        Log.i(LOG_TAG, "Lectura del curosr cargado" + dumpCursorToString(data));
+        Log.i(LOG_TAG, "Lectura del curosr cargado" + dumpCursorToString(data).toString());
         if (data != null && data.moveToFirst()) {
             Log.d(LOG_TAG, "Lectura del  cantidad de lineas" + data.getCount());
             m_Ref_Id_Movi=data.getInt(data.getColumnIndex(FilmsColumns._ID));
 
+            m_Id_Movi_Db=data.getInt(data.getColumnIndex(FilmsColumns.ID_MOVI_DB));
+           mTrailerCursor = getActivity().getContentResolver().query(FilmsProvider.Trailes.withId(m_Id_Movi_Db),
+                   null, null, null, null);
+            mTrailerAdapter = new TrailerCursorAdapter(getActivity(), mTrailerCursor, 0);
+            listView.setAdapter(mTrailerAdapter);
+
+            Log.i(LOG_TAG, "FilmsColumns.ID_MOVI_DB:"+FilmsColumns.ID_MOVI_DB);
+            Log.i(LOG_TAG, "Lectura del  m_Id_Movi_Db" + data.getInt(data.getColumnIndex(FilmsColumns.ID_MOVI_DB)));
 
             mTitleView.setText(data.getString(data.getColumnIndex(FilmsColumns.TITLE)));
             Log.d(LOG_TAG, "Lectura del  Titulo" + data.getString(data.getColumnIndex(FilmsColumns.TITLE)));
