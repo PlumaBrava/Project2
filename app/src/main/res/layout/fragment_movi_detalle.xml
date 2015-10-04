@@ -94,6 +94,26 @@
     android:layout_weight="1"
         />
 
+    <ListView
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/reviewList">
+
+
+    </ListView>
+
+
+    <ListView
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/trailerList">
+
+
+    </ListView>
 
 
 </LinearLayout>

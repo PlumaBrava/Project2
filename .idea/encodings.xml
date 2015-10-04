@@ -7,6 +7,8 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/FilmCursosAdapter1.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/FilmDataBase.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/FilmsProvider.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/ReviewCursorAdapter.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/TrailerCursorAdapter.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/retrofit" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/list_item_movie1.xml" charset="windows-1252" />
     <file url="PROJECT" charset="UTF-8" />

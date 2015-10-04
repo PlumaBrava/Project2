@@ -59,7 +59,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     protected GetReviewApi apiService2;
     private FilmCursosAdapter mFilmAdapter;
     static  private String ORDER_BY = "order_by";//Preference to fetch the movie information in the web POPULARITY, VOTE AVERAGE, VOTE COUNT
-    static  private String ASC_DESC = "asc_desc";//Preference to fetch the movie information in the web aSCENDENTE OR DESCENDENTE
+
+    public int mMostPolular;
+    public int mHightestrated;
+    public int mFavorite;
 
     private int mPosition = ListView.INVALID_POSITION;
 
@@ -88,7 +91,42 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         Log.i("Prererencias", "mthis" + preferenceHasChanged);
         if(preferenceHasChanged) {
 
-            updateData();
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String order_by=prefs.getString(ORDER_BY, "popularity.");
+
+            Log.i("Prererencias", "order_by:" + order_by );
+
+            mMostPolular =0;
+            mHightestrated=0;
+            mFavorite=0;
+
+            if(order_by.equals("popularity.")){
+
+                mMostPolular =1;
+                updateData();
+                Log.i("Prererencias", " casse popularity: ");
+            } else if (order_by.equals("vote_average.")){
+                mHightestrated=1;
+                updateData();
+                Log.i("Prererencias", " casse hight rated: ");
+            }else if (order_by.equals("vote_average.")){
+                mHightestrated=1;
+                updateData();
+                Log.i("Prererencias", " casse hight rated: ");
+            }else if (order_by.equals("favorites.")){
+
+            mFavorite=1;
+            Log.i("Prererencias", " casse favorito: ");
+            //it's not necesary update
+                }
+
+
+
+            Log.i("Prererencias", "popularity: " + mMostPolular+ " Hightestrated: "+ mHightestrated +" favorites: "+ mFavorite );
+
+
+           // updateData();
             preferenceHasChanged=false;
 
             //updateData();
@@ -103,25 +141,21 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         setHasOptionsMenu(true);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String order_by=prefs.getString(ORDER_BY, "popularity.");
-        String asc_desc = prefs.getString(ASC_DESC, "desc");
 
-        Log.i("Prererencias", "order_by:" + order_by + "asc_desc: " + asc_desc);
 
         Cursor c = getActivity().getContentResolver().query(FilmsProvider.Films.CONTENT_URI,
                 null, null, null, null);
 
         if (c == null || c.getCount() == 0){
-            Log.i(LOG_TAG, "Se llama a insertData");
-            insertData();
+            Log.i(LOG_TAG, "Se llama a insertData desde create view");
+           insertData();
         }
         Log.i(LOG_TAG, "cursor count: %d" + c.getCount());
 
-        mFilmAdapter = new FilmCursosAdapter(getActivity(), c, 0);
+
 
         View rootView = inflater.inflate(R.layout.moviefragment, container, false);
-
+        mFilmAdapter = new FilmCursosAdapter(getActivity(), c, 0);
         // Get a reference to the ListView, and attach this adapter to it.
         GridView listView = (GridView) rootView.findViewById(R.id.movies_list);
         listView.setAdapter(mFilmAdapter);
@@ -146,7 +180,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 mPosition = position;
             }
         });
-
 
 
         return rootView;
@@ -176,93 +209,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
 
 
+        //  Cursor c = getActivity().getContentResolver().query(FilmsProvider.Films.CONTENT_URI, null, null, null, null);
 
-/// Trailers
+       // if (c != null || c.getCount()<> 0){
+            Log.i(LOG_TAG, "Se llama a delete");
+            getActivity().getContentResolver().delete(FilmsProvider.Films.CONTENT_URI,
+                    null, null);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(THE_MOVIEDB_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        apiService = retrofit.create(GetMoviesApi.class); // create the interface
-        Log.d(LOG_TAG, "GetWeatherRestAdapter -- created");
-
-        // aSynchronous Call in Retrofit 2.0
-
-        Call<VideoData> call = apiService.getMoviesFromApi(232, VideoData.API_KEY);
-        Log.d(LOG_TAG, "se llama a la web: " + call.getClass().getFields().toString());
-        call.enqueue(new Callback<VideoData>() {
-            @Override
-            public void onResponse(Response<VideoData> response) {
-                // Get result Repo from response.body()
-                Log.d(LOG_TAG, "Llegaron los datos %d" + response.code());
-// Hacer algo con Response cod para evitarr errores, ejemplo sin datos..distinto de 202...
-                //VideoData data = response.body();
-
-                // Declaramos el Iterador e imprimimos los Elementos del ArrayList
-                VideoData videos = response.body();
-                Iterator<Films> video = videos.getResults().iterator();
-                ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(videos.getResults().size());
-
-                while (video.hasNext()) {
-
-                    Films elemento = video.next();
-
-
-
-                    ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-                            FilmsProvider.Trailes.CONTENT_URI);
-                    builder.withValue(TrailerColumns.REF_ID_MOVIE, 232);
-                    builder.withValue(TrailerColumns.ID_TRILER_DB, elemento.getId());
-                    builder.withValue(TrailerColumns.ISO6391, elemento.getIso6391());
-                    builder.withValue(TrailerColumns.KEY,elemento.getKey());
-                    builder.withValue(TrailerColumns.NAME,elemento.getName());
-                    builder.withValue(TrailerColumns.SICE,elemento.getSize());
-                    builder.withValue(TrailerColumns.TYPE, elemento.getType());
-                    batchOperations.add(builder.build());
-                    Log.d(LOG_TAG, "Llegaron los datos");
-                    Log.d(LOG_TAG, "Llegaron los datos" + elemento.getKey() + "|" + elemento.getName());
-
-
-
-
-//
-                }
-
-                try{
-                    getActivity().getContentResolver().applyBatch(FilmsProvider.AUTHORITY, batchOperations);
-                    Cursor c = getActivity().getContentResolver().query(FilmsProvider.Trailes.CONTENT_URI,
-                            null, null, null, null);
-
-                    Log.d(LOG_TAG, "Lectura del cursor cantidadi" + c.getCount());
-                    Log.d(LOG_TAG, "Lectura del cursos cantidadi" + dumpCursorToString(c));
-
-                    for(int i=1;i<c.getCount();i++) {
-
-                        getActivity().getContentResolver().delete(
-                                FilmsProvider.Trailes.withId(i), null, null);
-
-                    }
-
-                    Cursor c1 = getActivity().getContentResolver().query(FilmsProvider.Trailes.CONTENT_URI,
-                            null, null, null, null);
-                    Log.d(LOG_TAG, "Lectura del cursos cantidadi con delete" + dumpCursorToString(c1));
-
-                } catch(RemoteException | OperationApplicationException e){
-                    Log.e(LOG_TAG, "Error applying batch insert", e);
-
-
-
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Log.d(LOG_TAG, "Falla: " + t.toString());
-            }
-        });
-
-
+       // }
 
         ///// Filmas
 
@@ -279,13 +233,17 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         // aSynchronous Call in Retrofit 2.0
 
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String order_by=prefs.getString(ORDER_BY, "popularity.");
+
+
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("api_key", VideoData.API_KEY);
-        params.put("sort_by", "vote_average.desc");
+        params.put("sort_by", order_by+"desc");
 
         Call<FilmData> call1 = apiService1.getFilmsFromApi(params);
-        Log.d(LOG_TAG, "se llama a la web: " + call.getClass().getFields().toString());
+        Log.d(LOG_TAG, "se llama a la web: " + call1.getClass().getFields().toString());
 
 
         call1.enqueue(new Callback<FilmData>() {
@@ -306,33 +264,40 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
                     FilmData.Result elemento1 = videoa.next();
 
+                    if (existeFilmenInDB(elemento1.getId())) {
+                        //up date else
+                    }
+                    else {
 
 
+                        ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(FilmsProvider.Films.CONTENT_URI);
+                        builder.withValue(FilmsColumns.ADULT, elemento1.isAdult());
+                        builder.withValue(FilmsColumns.BACKDROP_PATH, elemento1.getBackdrop_path());
+                        builder.withValue(FilmsColumns.ID_MOVI_DB, elemento1.getId());
+                        builder.withValue(FilmsColumns.ORIGINAL_TITLE, elemento1.getOriginal_title());
+                        builder.withValue(FilmsColumns.ORIGINAL_LANGUAGE, elemento1.getOriginal_language());
+                        builder.withValue(FilmsColumns.OVERVIEW, elemento1.getOverview());
+                        builder.withValue(FilmsColumns.RELEASSE_DATE, elemento1.getRelease_date());
+                        builder.withValue(FilmsColumns.POSTER_PATH, elemento1.getPoster_path());
+                        builder.withValue(FilmsColumns.POPULARITY, elemento1.getPopularity());
+                        builder.withValue(FilmsColumns.TITLE, elemento1.getTitle());
+                        builder.withValue(FilmsColumns.VIDEO, elemento1.isVideo());
+                        builder.withValue(FilmsColumns.VOTE_AVERAGE, elemento1.getVote_average());
+                        builder.withValue(FilmsColumns.VOTE_COUNT, elemento1.getVote_count());
+                        builder.withValue(FilmsColumns.MOST_POPULAR, mMostPolular);
+                        builder.withValue(FilmsColumns.HIGHEST_RATED, mHightestrated);
+                        builder.withValue(FilmsColumns.FAVORITE, mFavorite);
 
-                    ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-                            FilmsProvider.Films.CONTENT_URI);
-                    builder.withValue(FilmsColumns.ADULT,elemento1.isAdult());
-                    builder.withValue(FilmsColumns.BACKDROP_PATH,elemento1.getBackdrop_path());
-                    builder.withValue(FilmsColumns.ID_MOVI_DB,elemento1.getId());
-                    builder.withValue(FilmsColumns.ORIGINAL_TITLE,elemento1.getOriginal_title());
-                    builder.withValue(FilmsColumns.ORIGINAL_LANGUAGE,elemento1.getOriginal_language());
-                    builder.withValue(FilmsColumns.OVERVIEW,elemento1.getOverview());
-                    builder.withValue(FilmsColumns.RELEASSE_DATE,elemento1.getRelease_date());
-                    builder.withValue(FilmsColumns.POSTER_PATH,elemento1.getPoster_path());
-                    builder.withValue(FilmsColumns.POPULARITY,elemento1.getPopularity());
-                    builder.withValue(FilmsColumns.TITLE,elemento1.getTitle());
-                    builder.withValue(FilmsColumns.VIDEO,elemento1.isVideo());
-                    builder.withValue(FilmsColumns.VOTE_AVERAGE,elemento1.getVote_average());
-                    builder.withValue(FilmsColumns.VOTE_COUNT,elemento1.getVote_count());
+                        batchOperations1.add(builder.build());
+                        Log.d(LOG_TAG, "Llegaron los datos Films>: " + elemento1.getOriginal_title() + "|" + elemento1.getTitle());
+                        Log.d(LOG_TAG, "Llegaron los datos relise date>: " + elemento1.getRelease_date() + "| Poster Path" + elemento1.getPoster_path());
+                        Log.d(LOG_TAG, "Llegaron los datos Back?drop>: " + elemento1.getBackdrop_path());
 
 
-                    batchOperations1.add(builder.build());
-                    Log.d(LOG_TAG, "Llegaron los datos Films>: " + elemento1.getOriginal_title()+ "|" + elemento1.getTitle());
-                    Log.d(LOG_TAG, "Llegaron los datos relise date>: " + elemento1.getRelease_date()+ "| Poster Path" + elemento1.getPoster_path());
-                    Log.d(LOG_TAG, "Llegaron los datos Back?drop>: " + elemento1.getBackdrop_path());
-//
+                    }
+                   // insertReview(elemento1.getId());
+                   // insertTrailer(elemento1.getId());
                 }
-
                 try{
                     getActivity().getContentResolver().applyBatch(FilmsProvider.AUTHORITY, batchOperations1);
                     Cursor c = getActivity().getContentResolver().query(FilmsProvider.Films.CONTENT_URI,
@@ -340,17 +305,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
                     Log.d(LOG_TAG, "Lectura del cursor de films " + c.getCount());
                     Log.d(LOG_TAG, "Lectura del cursor Fillms" + dumpCursorToString(c));
-
-//                    for(int i=1;i<c.getCount();i++) {
-//
-//                        getActivity().getContentResolver().delete(
-//                                FilmsProvider.Trailes.withId(i), null, null);
-//
-//                    }
-
-                    Cursor c1 = getActivity().getContentResolver().query(FilmsProvider.Films.CONTENT_URI,
-                            null, null, null, null);
-                    Log.d(LOG_TAG, "Lectura del cursos cantidadi con delete" + dumpCursorToString(c1));
 
                 } catch(RemoteException | OperationApplicationException e){
                     Log.e(LOG_TAG, "Error applying batch insert", e);
@@ -364,7 +318,108 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             }
         });
 
+    }
 
+
+
+
+public boolean existeFilmenInDB(int idFilm){
+    Cursor c = getActivity().getContentResolver().query(FilmsProvider.Films.withId(idFilm),
+            null, null, null, null);
+    if (c.getCount()>0) return true;
+    else return false;
+}
+
+public void insertTrailer(int moviId) {
+
+
+/// Trailers
+
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(THE_MOVIEDB_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+    apiService = retrofit.create(GetMoviesApi.class); // create the interface
+    Log.d(LOG_TAG, "GetWeatherRestAdapter -- created");
+
+    // aSynchronous Call in Retrofit 2.0
+
+    Call<VideoData> call = apiService.getMoviesFromApi(moviId, VideoData.API_KEY);
+    Log.d(LOG_TAG, "se llama a la web: " + call.getClass().getFields().toString());
+    call.enqueue(new Callback<VideoData>() {
+        @Override
+        public void onResponse(Response<VideoData> response) {
+            // Get result Repo from response.body()
+            Log.d(LOG_TAG, "Llegaron los datos %d" + response.code());
+// Hacer algo con Response cod para evitarr errores, ejemplo sin datos..distinto de 202...
+            //VideoData data = response.body();
+
+            // Declaramos el Iterador e imprimimos los Elementos del ArrayList
+            VideoData videos = response.body();
+            Iterator<Films> video = videos.getResults().iterator();
+            ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(videos.getResults().size());
+
+            while (video.hasNext()) {
+
+                Films elemento = video.next();
+
+
+
+                ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                        FilmsProvider.Trailes.CONTENT_URI);
+                builder.withValue(TrailerColumns.REF_ID_MOVIE, 232);
+                builder.withValue(TrailerColumns.ID_TRILER_DB, elemento.getId());
+                builder.withValue(TrailerColumns.ISO6391, elemento.getIso6391());
+                builder.withValue(TrailerColumns.KEY,elemento.getKey());
+                builder.withValue(TrailerColumns.NAME,elemento.getName());
+                builder.withValue(TrailerColumns.SICE,elemento.getSize());
+                builder.withValue(TrailerColumns.TYPE, elemento.getType());
+                batchOperations.add(builder.build());
+                Log.d(LOG_TAG, "Llegaron los datos");
+                Log.d(LOG_TAG, "Llegaron los datos" + elemento.getKey() + "|" + elemento.getName());
+
+
+
+
+//
+            }
+
+            try{
+                getActivity().getContentResolver().applyBatch(FilmsProvider.AUTHORITY, batchOperations);
+                Cursor c = getActivity().getContentResolver().query(FilmsProvider.Trailes.CONTENT_URI,
+                        null, null, null, null);
+
+                Log.d(LOG_TAG, "Lectura del cursor cantidadi" + c.getCount());
+                Log.d(LOG_TAG, "Lectura del cursos cantidadi" + dumpCursorToString(c));
+
+                Cursor c1 = getActivity().getContentResolver().query(FilmsProvider.Trailes.CONTENT_URI,
+                        null, null, null, null);
+                Log.d(LOG_TAG, "Lectura del cursos trailers" + dumpCursorToString(c1));
+
+            } catch(RemoteException | OperationApplicationException e){
+                Log.e(LOG_TAG, "Error applying batch insert", e);
+
+
+
+            }
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+            Log.d(LOG_TAG, "Falla: " + t.toString());
+        }
+    });
+
+
+
+
+
+}
+
+
+
+    public void insertReview(int moviId){
         ///// review
 
         Retrofit retrofit2 = new Retrofit.Builder()
@@ -372,7 +427,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        apiService2 = retrofit1.create(GetReviewApi.class); // create the interface
+        apiService2 = retrofit2.create(GetReviewApi.class); // create the interface
         Log.d(LOG_TAG, "reviw -- created");
 
         // aSynchronous Call in Retrofit 2.0
@@ -381,8 +436,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
 
 
-        Call<ReviewData> call2 = apiService2.getReviewFromApi(76341,VideoData.API_KEY);
-        Log.d(LOG_TAG, "se llama a la web x reviews: " + call.getClass().getFields().toString());
+        Call<ReviewData> call2 = apiService2.getReviewFromApi(moviId,VideoData.API_KEY);
+        Log.d(LOG_TAG, "se llama a la web x reviews: " + call2.getClass().getFields().toString());
 
 
         call2.enqueue(new Callback<ReviewData>() {
@@ -418,24 +473,23 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     }
 
-
     public void updateData(){
 
         // Read the Preference to call the web
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String order_by=prefs.getString(ORDER_BY, "popularity.");
-        String asc_desc = prefs.getString(ASC_DESC, "desc");
-
-        Log.i("Prererencias", "order_by:" + order_by + "asc_desc: " + asc_desc);
 
 
-     // DELETE FILMS WHITH FAVORITE = FALSE
+        Log.i("Prererencias", "order_by:" + order_by );
+
+
+        // DELETE FILMS WHITH FAVORITE = FALSE
 
      // CALL WEB
-
+        insertData();
         //Fetche the movis data
         //FetchMoviesTask moviesTask = new FetchMoviesTask();
-        //moviesTask.execute(order_by, asc_desc);
+
     }
 
 }

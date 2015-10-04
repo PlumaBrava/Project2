@@ -10,14 +10,12 @@
     <string-array name="order_by">
         <item>Popularity</item>
         <item>Highest Rate</item>
-        <item>Vote Count</item>
-        <item>Preference</item>
+        <item>Favorites</item>
     </string-array>
     <string-array name="order_by_values">
         <item>popularity.</item>
         <item>vote_average.</item>
-        <item>vote_count.</item>
-        <item>preference.</item>
+        <item>favorites.</item>
     </string-array>
     <string name="ascendent_descendent">Sort Order Criteria</string>
     <string-array name="ascendent_descendent">
