@@ -51,6 +51,10 @@ public class FilmServices extends IntentService {
     static  private String ORDER_BY = "order_by";//Preference to fetch the movie information in the web POPULARITY, VOTE AVERAGE, VOTE COUNT
     private   ArrayList<ContentProviderOperation> batchOperations1;
     ContentResolver resolver;
+
+    private int mMostPolular;
+    private int mHightestrated;
+    private int mFavorite;
     public FilmServices() {
         super("FilmServices");
     }
@@ -145,9 +149,36 @@ public class FilmServices extends IntentService {
 
         // aSynchronous Call in Retrofit 2.0
 
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String order_by=prefs.getString(ORDER_BY, "popularity.");
+
+        Log.i("Prererencias", "order_by:" + order_by );
+
+        mMostPolular =0;
+        mHightestrated=0;
+        mFavorite=0;
+
+        if(order_by.equals("popularity.")){
+
+            mMostPolular =1;
+
+            Log.i("Prererencias", " casse popularity: ");
+        } else if (order_by.equals("vote_average.")){
+            mHightestrated=1;
+
+            Log.i("Prererencias", " casse hight rated: ");
+        }else if (order_by.equals("favorites.")){
+
+            mFavorite=1;
+            Log.i("Prererencias", " casse favorito: ");
+            //it's not necesary update
+        }
+        Log.i("Prererencias", "popularity: " + mMostPolular+ " Hightestrated: "+ mHightestrated +" favorites: "+ mFavorite );
+
+
+
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        String order_by=prefs.getString(ORDER_BY, "popularity.");
 
 
 
@@ -198,9 +229,9 @@ public class FilmServices extends IntentService {
                         builder.withValue(FilmsColumns.VIDEO, elemento1.isVideo());
                         builder.withValue(FilmsColumns.VOTE_AVERAGE, elemento1.getVote_average());
                         builder.withValue(FilmsColumns.VOTE_COUNT, elemento1.getVote_count());
-//                        builder.withValue(FilmsColumns.MOST_POPULAR, mMostPolular);
-//                        builder.withValue(FilmsColumns.HIGHEST_RATED, mHightestrated);
-//                        builder.withValue(FilmsColumns.FAVORITE, mFavorite);
+                        builder.withValue(FilmsColumns.MOST_POPULAR, mMostPolular);
+                        builder.withValue(FilmsColumns.HIGHEST_RATED, mHightestrated);
+                        builder.withValue(FilmsColumns.FAVORITE, mFavorite);
 
                         batchOperations1.add(builder.build());
                         Log.d(LOG_TAG, "Llegaron los datos Films>: " + elemento1.getOriginal_title() + "|" + elemento1.getTitle());

@@ -117,19 +117,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 mHightestrated=1;
                 updateData();
                 Log.i("Prererencias", " casse hight rated: ");
-            }else if (order_by.equals("vote_average.")){
-                mHightestrated=1;
-                updateData();
-                Log.i("Prererencias", " casse hight rated: ");
             }else if (order_by.equals("favorites.")){
 
             mFavorite=1;
             Log.i("Prererencias", " casse favorito: ");
             //it's not necesary update
                 }
-
-
-
             Log.i("Prererencias", "popularity: " + mMostPolular+ " Hightestrated: "+ mHightestrated +" favorites: "+ mFavorite );
 
 
