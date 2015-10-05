@@ -56,9 +56,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private static final int CURSOR_LOADER_ID = 0;
     static final String THE_MOVIEDB_URL="http://api.themoviedb.org/";
-    protected GetMoviesApi apiService;
-    protected GetFilmsApi apiService1;
-    protected GetReviewApi apiService2;
     private FilmCursosAdapter mFilmAdapter;
     static  private String ORDER_BY = "order_by";//Preference to fetch the movie information in the web POPULARITY, VOTE AVERAGE, VOTE COUNT
 

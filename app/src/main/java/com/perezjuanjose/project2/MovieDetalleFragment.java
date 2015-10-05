@@ -92,8 +92,6 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
-//        mTrailerCursor.moveToFirst();
-//        mfirstTrailer="https://www.youtube.com/watch?v="+ mTrailerCursor.getString(mTrailerCursor.getColumnIndex(TrailerColumns.KEY));
         shareIntent.putExtra(Intent.EXTRA_TEXT, mfirstTrailer + MOVIDB_SHARE_HASHTAG);
         //shareIntent.putExtra(Intent.EXTRA_TEXT, mForecast + FORECAST_SHARE_HASHTAG);
         return shareIntent;
