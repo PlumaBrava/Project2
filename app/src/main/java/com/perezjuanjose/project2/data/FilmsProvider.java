@@ -23,6 +23,8 @@ public class FilmsProvider {
         String TRILERS = "trailers";
         String REVIEWS = "reviews";
         String FAVORITOS = "favoritos";
+        String POPULARITY = "popularity";
+        String HIGHTRATED = "hightrated";
     }
 
     private static Uri buildUri(String ... paths){
@@ -62,6 +64,25 @@ public class FilmsProvider {
                 return buildUri(Path.FAVORITOS, String.valueOf(id));
             }
 
+            @InexactContentUri(
+                    name = "MOVI_POPULARITY",
+                    path =  Path.POPULARITY + "/#",
+                    type = "vnd.android.cursor.dir/movies",
+                    whereColumn =  FilmsColumns.MOST_POPULAR,
+                    pathSegment = 1)
+            public static Uri withPopularity(long id){
+                return buildUri(Path.POPULARITY, String.valueOf(id));
+            }
+
+            @InexactContentUri(
+                    name = "MOVI_HIGHTRATED",
+                    path =  Path.HIGHTRATED + "/#",
+                    type = "vnd.android.cursor.dir/movies",
+                    whereColumn =  FilmsColumns.HIGHEST_RATED,
+                    pathSegment = 1)
+            public static Uri withHighestRated(long id){
+                return buildUri(Path.HIGHTRATED, String.valueOf(id));
+            }
 
         }
 

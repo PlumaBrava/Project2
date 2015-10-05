@@ -129,7 +129,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
            // updateData();
             preferenceHasChanged=false;
 
-            //updateData();
+            getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
         }
         super.onStart();
     }
@@ -188,12 +188,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         String order_by=prefs.getString(ORDER_BY, "popularity.");
 
         if(order_by.equals("popularity.")){
-            uri=FilmsProvider.Films.CONTENT_URI;
+            uri=FilmsProvider.Films.withPopularity(1);
             mMostPolular =1;
             Log.i("Prererencias", " casse popularity: ");
 
         } else if (order_by.equals("vote_average.")){
-            uri=FilmsProvider.Films.CONTENT_URI;
+            uri=FilmsProvider.Films.withHighestRated(1);
             mHightestrated=1;
             Log.i("Prererencias", " casse hight rated: ");
 
