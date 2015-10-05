@@ -43,7 +43,7 @@ import static android.database.DatabaseUtils.dumpCursorToString;
 public class MovieDetalleFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     private static final String MOVIDB_SHARE_HASHTAG = " #MoviDB";
     private ShareActionProvider mShareActionProvider;
-    private String mfirstTrailer="xx";
+    private String mfirstTrailer="you tube";
     private final String LOG_TAG = MovieDetalleFragment.class.getSimpleName();
     static final String DETAIL_URI = "URI";
     private Uri mUri;
@@ -82,7 +82,7 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
 
         // If onLoadFinished happens before this, we can go ahead and set the share intent now.
 
-
+//        mShareActionProvider.setShareIntent(createShareIntent());
         if (mfirstTrailer != null) {
             mShareActionProvider.setShareIntent(createShareIntent());
         }
@@ -92,6 +92,8 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
+//        mTrailerCursor.moveToFirst();
+//        mfirstTrailer="https://www.youtube.com/watch?v="+ mTrailerCursor.getString(mTrailerCursor.getColumnIndex(TrailerColumns.KEY));
         shareIntent.putExtra(Intent.EXTRA_TEXT, mfirstTrailer + MOVIDB_SHARE_HASHTAG);
         //shareIntent.putExtra(Intent.EXTRA_TEXT, mForecast + FORECAST_SHARE_HASHTAG);
         return shareIntent;
@@ -244,10 +246,10 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
            mTrailerCursor = getActivity().getContentResolver().query(FilmsProvider.Trailes.withId(m_Id_Movi_Db),
                    null, null, null, null);
             if (mTrailerCursor != null && mTrailerCursor.moveToFirst()) {
-
+                mfirstTrailer="https://www.youtube.com/watch?v="+ mTrailerCursor.getString(mTrailerCursor.getColumnIndex(TrailerColumns.KEY));
                 mTrailerAdapter = new TrailerCursorAdapter(getActivity(), mTrailerCursor, 0);
                 listView.setAdapter(mTrailerAdapter);
-
+                Log.i(LOG_TAG, "mfirstTrailer:" + mfirstTrailer);
                 Log.i(LOG_TAG, "FilmsColumns.ID_MOVI_DB:" + FilmsColumns.ID_MOVI_DB);
                 Log.i(LOG_TAG, "Lectura del  m_Id_Movi_Db" + data.getInt(data.getColumnIndex(FilmsColumns.ID_MOVI_DB)));
             }else {
@@ -291,6 +293,7 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
 
 
         }
+
     }
 
     @Override
