@@ -139,10 +139,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-
-
-
         Cursor c = getActivity().getContentResolver().query(FilmsProvider.Films.CONTENT_URI,
                 null, null, null, null);
 
@@ -187,11 +183,45 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), FilmsProvider.Films.CONTENT_URI,
-                null,
-                null,
-                null,
-                null);
+       Uri uri;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String order_by=prefs.getString(ORDER_BY, "popularity.");
+
+        if(order_by.equals("popularity.")){
+            uri=FilmsProvider.Films.CONTENT_URI;
+            mMostPolular =1;
+            Log.i("Prererencias", " casse popularity: ");
+
+        } else if (order_by.equals("vote_average.")){
+            uri=FilmsProvider.Films.CONTENT_URI;
+            mHightestrated=1;
+            Log.i("Prererencias", " casse hight rated: ");
+
+        }else if (order_by.equals("favorites.")){
+            uri=FilmsProvider.Films.withFavoritos(1);
+            mFavorite=1;
+            Log.i("Prererencias", " casse favorito: ");
+            //it's not necesary update
+        }else {
+
+            return new CursorLoader(getActivity(), FilmsProvider.Films.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+        Log.i("Prererencias", "popularity: " + mMostPolular + " Hightestrated: " + mHightestrated + " favorites: " + mFavorite);
+
+        if ( null != uri ) {
+            return new CursorLoader(getActivity(), uri,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+
+        return null;
+
     }
 
     @Override

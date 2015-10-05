@@ -85,9 +85,33 @@ public class FilmServices extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String filmQuery = intent.getStringExtra(FILM_QUERY_EXTRA);
-        insertData();
 
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String order_by=prefs.getString(ORDER_BY, "popularity.");
+
+        Log.i("Prererencias", "order_by:" + order_by );
+
+        mMostPolular =0;
+        mHightestrated=0;
+        mFavorite=0;
+
+        if(order_by.equals("popularity.")){
+            insertData();
+            mMostPolular =1;
+
+            Log.i("Prererencias", " casse popularity: ");
+        } else if (order_by.equals("vote_average.")){
+            insertData();
+            mHightestrated=1;
+
+            Log.i("Prererencias", " casse hight rated: ");
+        }else if (order_by.equals("favorites.")){
+
+            mFavorite=1;
+            Log.i("Prererencias", " casse favorito: ");
+            //it's not necesary update
+        }
 
           }
 

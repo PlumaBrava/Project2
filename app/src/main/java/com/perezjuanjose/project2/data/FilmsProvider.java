@@ -22,6 +22,7 @@ public class FilmsProvider {
         String FILMS = "films";
         String TRILERS = "trailers";
         String REVIEWS = "reviews";
+        String FAVORITOS = "favoritos";
     }
 
     private static Uri buildUri(String ... paths){
@@ -49,6 +50,16 @@ public class FilmsProvider {
                     pathSegment = 1)
             public static Uri withId(long id){
                 return buildUri(Path.FILMS, String.valueOf(id));
+            }
+
+            @InexactContentUri(
+                    name = "MOVI_FAVORITOS",
+                    path =  Path.FAVORITOS + "/#",
+                    type = "vnd.android.cursor.dir/movies",
+                    whereColumn =  FilmsColumns.FAVORITE,
+                    pathSegment = 1)
+            public static Uri withFavoritos(long id){
+                return buildUri(Path.FAVORITOS, String.valueOf(id));
             }
 
 
