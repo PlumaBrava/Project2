@@ -13,7 +13,7 @@ import retrofit.http.QueryMap;
  */
 
 
-//https://api.themoviedb.org/3/discover/movie?api_key=79424eca98daa0b906a464bf7d8f9f0f&sort_by=popularity.asc
+//https://api.themoviedb.org/3/discover/movie?api_key=xxx&sort_by=popularity.asc
 
     public interface  GetFilmsApi {
 
