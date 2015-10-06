@@ -2,9 +2,7 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/Film.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/FillmsColumns.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/FilmCursosAdapter.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/FilmCursosAdapter1.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/FilmDataBase.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/FilmsProvider.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/perezjuanjose/project2/data/ReviewCursorAdapter.java" charset="windows-1252" />

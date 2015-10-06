@@ -10,7 +10,7 @@ import retrofit.http.Query;
  * Created by JJ_PEREZ on 23/09/2015.
  */
 
-//http://api.themoviedb.org/3/movie/232/videos?api_key=79424eca98daa0b906a464bf7d8f9f0f
+//http://api.themoviedb.org/3/movie/232/videos?api_key=xxx
 public interface  GetMoviesApi {
 
 

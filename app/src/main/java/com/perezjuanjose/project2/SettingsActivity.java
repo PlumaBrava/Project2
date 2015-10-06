@@ -47,6 +47,11 @@ public class SettingsActivity extends PreferenceActivity {
         setupSimplePreferencesScreen();
     }
 
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+
+        return  GeneralPreferenceFragment.class.getName().equals(fragmentName);
+    }
     /**
      * Shows the simplified settings UI if the device configuration if the
      * device configuration dictates that a simplified, single-pane UI should be

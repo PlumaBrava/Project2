@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.perezjuanjose.project2.Services.ReviewServices;
 import com.perezjuanjose.project2.Services.TrailerServices;
@@ -179,10 +180,16 @@ public class MovieDetalleFragment extends Fragment implements LoaderManager.Load
                     if (cursor != null) {
                         //       String locationSetting = Utility.getPreferredLocation(getActivity());
 
-                        String key = cursor.getString(cursor.getColumnIndex(TrailerColumns.KEY));
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + key));
-                        //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:7voEoWRKbAE" ));
-                        startActivity(intent);
+                        try {
+
+                            String key = cursor.getString(cursor.getColumnIndex(TrailerColumns.KEY));
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + key));
+                            startActivity(intent);
+
+                        } catch(Exception e) {
+                            Toast.makeText(getActivity(), "Plase install Youtube app to see this video", Toast.LENGTH_LONG).show();
+                        }
+
 
                     }
 
